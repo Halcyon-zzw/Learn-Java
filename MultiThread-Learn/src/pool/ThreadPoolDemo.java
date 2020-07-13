@@ -1,6 +1,10 @@
 package pool;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
+
+import static java.util.concurrent.Executors.newFixedThreadPool;
 
 /**
  * 线程池演示类
@@ -19,7 +23,7 @@ import java.util.concurrent.*;
  * @Version: 1.0
  */
 public class ThreadPoolDemo {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         /* 不建议使用
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         executorService.submit(new RunnableImpl());
@@ -29,11 +33,12 @@ public class ThreadPoolDemo {
         */
 
         ExecutorService executorService = newThreadPoolExtractor();
-
+        List<String> result = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            executorService.execute(new MyTask(String.valueOf(i)));
+            String name = "Thread-" + i;
+            executorService.execute(new MyTask(name));
         }
-
+        System.out.println("数组：" + result);
 
     }
 
@@ -62,9 +67,10 @@ public class ThreadPoolDemo {
     private static ExecutorService newThreadPoolExtractor() {
         int corePoolSize = 1;
         int maxinumPoolSize = 4;
-        long keppAliceTime = 10L;
+        long keepAliveTime = 10L;
+        int capacity = 7;
         TimeUnit unit = TimeUnit.SECONDS;
-        BlockingQueue<Runnable> blockingDeque = new ArrayBlockingQueue<>(7);
+        BlockingQueue<Runnable> blockingDeque = new ArrayBlockingQueue<>(capacity);
 
         ThreadFactory threadFactory = ((r) -> {
             System.out.println("create new thread");
@@ -75,7 +81,7 @@ public class ThreadPoolDemo {
 
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
                 maxinumPoolSize,
-                keppAliceTime,
+                keepAliveTime,
                 unit,
                 blockingDeque,
                 threadFactory,
