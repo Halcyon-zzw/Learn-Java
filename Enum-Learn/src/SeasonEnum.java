@@ -6,5 +6,5 @@
  * @Version: 1.0
  */
 public enum SeasonEnum {
-    SPRING, SSUMMER, FALL, WINTER;
+    SPRING, SUMMER, FALL, WINTER;
 }
