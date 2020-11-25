@@ -12,8 +12,8 @@ public class StringTableExam {
         String s1 = "a";
         String s2 = "b";
         String s3 = "ab";
-        String s4 = s1 + s2;    //new StringBuilder().append("a").append("b") => new String("ab") => new出来的对象，在对内存中
-        String s5 = "a" + "b";  //结果在编译期间以确定为ab
+        String s4 = s1 + s2;    //new StringBuilder().append("a").append("b") => new String("ab") => new出来的对象，在堆内存中
+        String s5 = "a" + "b";  //结果在编译期间已确定为ab
         String s6 = s4.intern();
 
         System.out.println(s3 == s4);   //false     s3在串池中，s4在堆内存中
