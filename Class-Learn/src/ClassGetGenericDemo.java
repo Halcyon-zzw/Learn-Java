@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * class获取泛型信息 演示
+ * 只能获取方法参数中的泛型信息以及方法返回值中的泛型信息
  *
  * @Author: zhuzw
  * @Date: 2020-07-03 8:55
@@ -25,6 +26,7 @@ public class ClassGetGenericDemo {
 
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException {
         Class clazz = ClassGetGenericDemo.class;
+        System.out.println("获取方法参数泛型：");
         Method test01Method = clazz.getMethod("test01", Map.class, List.class, int.class);
         Type[] genericParameterTypes = test01Method.getGenericParameterTypes();
         for (Type genericParameterType : genericParameterTypes) {
@@ -35,8 +37,7 @@ public class ClassGetGenericDemo {
             }
             System.out.println("-----------------");
         }
-
-
+        System.out.println("获取返回值泛型：");
         Method test02Method = clazz.getMethod("test02");
         Type genericReturnType = test02Method.getGenericReturnType();
         if (genericReturnType instanceof ParameterizedType) {

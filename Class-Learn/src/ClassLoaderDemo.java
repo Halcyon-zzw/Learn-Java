@@ -1,3 +1,5 @@
+import java.net.URL;
+
 /**
  * 获取类加载器演示
  *
@@ -9,11 +11,11 @@ public class ClassLoaderDemo {
     public static void main(String[] args) throws ClassNotFoundException {
         //获取系统类加载器
         ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-        System.out.println(systemClassLoader);
+        System.out.println("系统类加载器" + systemClassLoader);
 
         //获取系统类加载器的父类 -> 扩展加载器
         ClassLoader parentClassLoader = systemClassLoader.getParent();
-        System.out.println(parentClassLoader);
+        System.out.println("扩展加载器" + parentClassLoader);
 
         //尝试获取根加载器 (null 无法直接获取)
         ClassLoader rootClassLoader = parentClassLoader.getParent();
@@ -28,6 +30,7 @@ public class ClassLoaderDemo {
         System.out.println(inClassLoader);
 
         //获取系统类加载器可以加载的路径
+        System.out.println("===========系统加载器加内容===========载");
         System.out.println(System.getProperty("java.class.path"));
         /**
          * D:\Java\jdk1.8.0_211\jre\lib\charsets.jar
@@ -57,5 +60,11 @@ public class ClassLoaderDemo {
          * D:\IntelliJ IDEA 2018.3\lib\idea_rt.jar
          */
 
+        System.out.println("===========根加载器加内容===========载");
+        URL[] urls = sun.misc.Launcher.getBootstrapClassPath().getURLs();
+        for (URL url : urls) {
+            System.out.println(url.toExternalForm());
+        }
+        
     }
 }
