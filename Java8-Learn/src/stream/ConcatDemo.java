@@ -3,7 +3,7 @@ package stream;
 import java.util.stream.Stream;
 
 /**
- * 流方法 concat演示，
+ * 流方法 concat 演示，
  * 合并两个流
  *
  * @Author: zhuzw
