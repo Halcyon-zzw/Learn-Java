@@ -12,9 +12,9 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
  * 线程池使用步骤：
  *      1、使用Executors工厂类的newFixedThreadPool获取指定线程数量的线程池（返回实现了ExecutorService接口的对象）
  *          - 或newSingleThreadPool、newCacheThreadPool、newScheduledThreadPool,
- *          - 不建议使用该类方法，
+ *          - 不建议使用此类方法，
  *              - 前两个允许的请求队列为Integer.MAX_VALUE，可能堆积大量的请求，从而导致OOM
- *              - 后两个允许创建的线程数量时Integer.MAX_VALUE，可能创建大量线程，从而导致OOM
+ *              - 后两个允许创建的线程数量为Integer.MAX_VALUE，可能创建大量线程，从而导致OOM
  *      2、创建线程类，设置线程任务
  *      3、调用ExecutorService中的sumbit(Thread thread)方法，开启线程
  *      4、不建议使用：调用ExecutorService的shutdown()方法消耗线程池
