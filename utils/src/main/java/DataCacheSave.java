@@ -33,19 +33,28 @@ public class DataCacheSave {
     @Setter
     private int saveSize = 50;
     /**
-     * 输出路径（模板）如 "./work/data/clean/log/cleanInfo_%s.txt"
+     * 输出路径（模板）
      */
     private String pathFormat;
-    private String savePath;
+    private String savePath = "";
+    private boolean suffixFlag;
+    private long curFileSize = 0;
+
+    public void curFileSizeInit() {
+        File file = new File(String.format(pathFormat, DateUtils.getDateSuf()));
+        curFileSize = file.length();
+    }
 
     public DataCacheSave(String pathFormat) {
         this.pathFormat = pathFormat;
+        curFileSizeInit();
     }
 
     public DataCacheSave(String pathFormat, long fileSize, int saveSize) {
         this.FILE_SIZE = fileSize == 0 ? FILE_SIZE : fileSize;
         this.saveSize = saveSize == 0 ? saveSize : saveSize;
         this.pathFormat = pathFormat;
+        curFileSizeInit();
     }
 
 
@@ -59,14 +68,20 @@ public class DataCacheSave {
                 return;
             }
             savedCleanInfos = unSafedataInfos;
-            unSafedataInfos = new CopyOnWriteArraySet<>();
-
+            unSafedataInfos = new HashSet<>();
+            constructSavePath();
+            //在保存文件前添加
+            curFileSize += savedCleanInfos.size();
         } finally {
             lock.unlock();
         }
-        constructSavePath();
-        System.out.println("保存内容:" + savedCleanInfos);
-        FileUtils.createFile(savedCleanInfos, savePath, true);
+        try {
+            FileUtils.createFile(savedCleanInfos, savePath, true);
+        }catch (IOException e) {
+            curFileSize -= saveSize;
+            throw e;
+        }
+
     }
 
     /**
@@ -134,26 +149,52 @@ public class DataCacheSave {
         saveSafeReal(dataInfo);
     }
 
+
     /**
      * 构建文件输出路径
+     * 按日期分后缀 && 单个文件不超过{@link saveSize}
+     *
+     * 如果存在后缀，直接获取新的地址
+     *
+     * 存在线程安全问题，当每次保存的数量较少，多个线程可能同时超过阈值，
+     *              而获取在文件保存数据前，获取到不准确的文件大小 可能获取到的savePath为同一个
+     * 解决：缓存当前文件大小，无需从文件中获取
      */
     protected void constructSavePath() {
-        if (savePath == null) {
+        if (curFileSize >= FILE_SIZE) {
+            String dateSuf = DateUtils.getDateSuf();
+            if (savePath.contains(dateSuf)) {
+                //日期相同
+                savePath = String.format(pathFormat, dateSuf + "_" + UUID.randomUUID());
+            }else {
+                savePath = String.format(pathFormat, dateSuf);
+            }
+            curFileSize = 0;
+        }else {
             savePath = String.format(pathFormat, DateUtils.getDateSuf());
         }
-        File file = new File(savePath);
-        if (file.exists()) {
-            long length = file.length();
-            if (length >= FILE_SIZE) {
-                //如果跨天，则后缀不同
-                String cleanPath = String.format(pathFormat, DateUtils.getDateSuf());
-                File tempFile = new File(cleanPath);
-                if (tempFile.exists()) {
-                    cleanPath = String.format(pathFormat, DateUtils.getDateSuf() + "_" + UUID.randomUUID());
-                }
-                this.savePath = cleanPath;
-            }
-        }
+
+
+
+//        if (suffixFlag) {
+//            //存在后缀，获取新的地址
+//            String dateSuf = DateUtils.getDateSuf();
+//            if (savePath.contains(dateSuf)) {
+//                //日期相同
+//                savePath = String.format(pathFormat, dateSuf + "_" + UUID.randomUUID());
+//            }else {
+//                savePath = String.format(pathFormat, dateSuf);
+//                suffixFlag = false;
+//            }
+//            //新的文件，更新当前文件大小
+//            curFileSize = 0;
+//        } else {
+//            savePath = String.format(pathFormat, DateUtils.getDateSuf());
+//            if (curFileSize >= FILE_SIZE) {
+//                savePath = String.format(pathFormat, DateUtils.getDateSuf() + "_" + UUID.randomUUID());
+//                suffixFlag = true;
+//            }
+//        }
     }
 
     /**

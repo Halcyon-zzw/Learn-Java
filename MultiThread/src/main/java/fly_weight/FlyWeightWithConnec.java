@@ -7,6 +7,7 @@ package fly_weight;
  * @Date: 2020-12-04 16:28
  * @Version: 1.0
  */
+import lock.PoolBySemaphore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
@@ -30,12 +31,12 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  */
 @Slf4j
 public class FlyWeightWithConnec {
-    private Connection[] connections;
+    protected Connection[] connections;
 
-    private int poolSize;
+    protected int poolSize;
 
     //记录当前连接的状态
-    private AtomicIntegerArray states;
+    protected AtomicIntegerArray states;
 
     public FlyWeightWithConnec(int poolSize) {
         this.poolSize = poolSize;
@@ -48,6 +49,7 @@ public class FlyWeightWithConnec {
 
     public static void main(String[] args) {
         FlyWeightWithConnec connecDemo = new FlyWeightWithConnec(2);
+//        FlyWeightWithConnec connecDemo = new PoolBySemaphore(2);
 
         for (int i = 0; i < 10; i++) {
             new Thread(() -> {
