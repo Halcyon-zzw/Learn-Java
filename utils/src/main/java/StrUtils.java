@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 字符工具类
@@ -44,7 +45,7 @@ public class StrUtils {
      * @return
      */
     public static boolean isLetter(String str) {
-        Matcher matcher = PatternUtil.ENGLISH_PATTERN.matcher(str);
+        Matcher matcher = StrConstant.ENGLISH_PATTERN.matcher(str);
         if (matcher.matches()) {
             return true;
         }
@@ -223,7 +224,7 @@ public class StrUtils {
 }
 
 interface StrConstant {
-
+    Pattern ENGLISH_PATTERN = Pattern.compile("[a-zA-Z\\s]*");
 }
 
 /**
