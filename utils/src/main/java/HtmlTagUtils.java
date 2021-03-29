@@ -19,7 +19,8 @@ public class HtmlTagUtils {
     public static final String END_DIV_HTML = "</div>";
     public static final String END_P_HTML = "</p>";
     public static final String END_H_HTML = "</h[1-6]>";
-    public static final String BR_HTML = "</br>";
+    public static final String BEGIN_BR_HTML = "<br>";
+    public static final String END_BR_HTML = "</br>";
     /**
      * js标签
      */
@@ -68,7 +69,7 @@ public class HtmlTagUtils {
      */
     public static String removeHtmlTag(String srcStr) {
         return StringUtils.isBlank(srcStr) ? StringUtils.EMPTY :
-                srcStr.replace(BR_HTML, "\n")
+                srcStr.replace(END_BR_HTML, "\n")
                         .replaceAll(REG_EX_SCRIPT, "")
                         .replaceAll(REG_EX_STYLE, "")
                         .replaceAll(REG_EX_HTML, "")
@@ -77,8 +78,8 @@ public class HtmlTagUtils {
 
     public static String contextClean(String srcStr) {
         return StringUtils.isBlank(srcStr) ? StringUtils.EMPTY :
-                srcStr.replaceAll("\\\\n", "")
-                        .replaceAll("\\\\t", "");
+                srcStr.replaceAll("\\\\n", "\n")
+                        .replaceAll("\\\\t", "\t");
     }
 
     /**

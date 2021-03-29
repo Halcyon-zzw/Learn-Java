@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,18 +12,11 @@ import java.util.regex.Pattern;
  */
 public class PatternUtils {
 
-
-
     public static String BLANK_REGEX = "[\\s  　]";
 
 
     public static boolean find(String text, String regex) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            return true;
-        }
-        return false;
+        return find(text, Pattern.compile(regex));
     }
 
     public static boolean find(String text, Pattern pattern) {
@@ -31,6 +25,20 @@ public class PatternUtils {
             return true;
         }
         return false;
+    }
+
+    public static List<String> getFindGroups(String text, String regex) {
+        return getFindGroups(text, Pattern.compile(regex));
+    }
+
+    public static List<String> getFindGroups(String text, Pattern pattern) {
+        Matcher matcher = pattern.matcher(text);
+        List<String> groups = new ArrayList<>();
+        while (matcher.find()) {
+            String group = matcher.group();
+            groups.add(group);
+        }
+        return groups;
     }
 
     /**

@@ -1,4 +1,4 @@
-package runtime_optimization;
+package memory_structure.runtime_optimization;
 
 /**
  * 运行时优化 - “方法内敛”演示

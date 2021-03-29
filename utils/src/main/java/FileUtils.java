@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -18,6 +19,10 @@ import java.util.function.Function;
  * @Version: 1.0
  */
 public class FileUtils {
+
+    private final static String DEFAULT_CHARSET_NAME = "UTF-8";
+
+    private final static int DEFAULT_COUNT = -1;
     /**
      * 获取文件所有内容
      *
@@ -25,21 +30,61 @@ public class FileUtils {
      * @return
      * @throws IOException
      */
-    public static List<String> readAll(String path, String charsetName) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), charsetName));
-        return readAll(br);
+    public static List<String> readAll(String path) throws IOException {
+        return readAll(path, DEFAULT_CHARSET_NAME);
     }
 
-    public static List<String> readAll(String path) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
-        return readAll(br);
+    public static List<String> readAll(String path, String charsetName) throws IOException {
+        return readAll(path, charsetName, DEFAULT_COUNT);
     }
+
+    public static List<String> readAll(String path, int count) throws IOException {
+        return readAll(path, DEFAULT_CHARSET_NAME, count);
+    }
+
+    public static List<String> readAll(String path, String charsetName, int count) throws IOException {
+        return readAll(new FileInputStream(path), charsetName, count);
+    }
+
+
+    public static List<String> readAll(InputStream inputStream) throws IOException {
+        return readAll(inputStream, DEFAULT_CHARSET_NAME);
+    }
+
+    public static List<String> readAll(InputStream inputStream, String charsetName) throws IOException {
+        return readAll(inputStream, charsetName, DEFAULT_COUNT);
+    }
+
+    public static List<String> readAll(InputStream inputStream, int count) throws IOException {
+        return readAll(inputStream, DEFAULT_CHARSET_NAME, count);
+    }
+
+    public static List<String> readAll(InputStream inputStream,String charsetName, int count) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charsetName));
+        return readAll(br, count);
+    }
+
 
     public static List<String> readAll(BufferedReader br) throws IOException {
-        String line = "";
+        return readAll(br, DEFAULT_COUNT);
+    }
+
+    /**
+     * 获取指定数量的数据
+     * @param br
+     * @param count 获取指定数量的数据，当数量设置为 -1 时，获取所有
+     * @return
+     * @throws IOException
+     */
+    public static List<String> readAll(BufferedReader br, int count) throws IOException {
         List<String> strList = new ArrayList<>();
+        String line = "";
         while ((line = br.readLine()) != null) {
-            strList.add(line);
+            if (count == -1) {
+                strList.add(line);
+            }else if (strList.size() >= count){
+                break;
+            }
         }
         return strList;
     }
@@ -118,11 +163,9 @@ public class FileUtils {
 //                    new FileWriter(target.toFile(), append)
 //            );
             bw = Files.newBufferedWriter(target, StandardOpenOption.APPEND);
-
         }else {
             bw = Files.newBufferedWriter(target, StandardCharsets.UTF_8);
         }
-
         for (String s : strings) {
             if (s == null) {
                 continue;
@@ -158,5 +201,24 @@ public class FileUtils {
             return file.delete();
         }
         return false;
+    }
+
+    /**
+     * 获取新路径
+     *
+     * 文件冲突后，通过添加后缀的方式保证输出路径不冲突
+     *
+     * @param path
+     * @return
+     */
+    public static String getFileNewPath(String path) {
+        Path targetPath = Paths.get(path);
+        String dirPath = targetPath.getParent().toString();
+        String fileName = targetPath.getFileName().toString().split("\\.")[0];
+        String suffixName = "." + targetPath.getFileName().toString().split("\\.")[1];
+        //文件名后面加入UUID
+        fileName = fileName + "_" + UUID.randomUUID().toString() + suffixName;
+        path = dirPath + "\\" + fileName;
+        return path;
     }
 }

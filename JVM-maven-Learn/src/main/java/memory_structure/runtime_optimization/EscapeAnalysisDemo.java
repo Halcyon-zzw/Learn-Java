@@ -1,6 +1,4 @@
-package runtime_optimization;
-
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+package memory_structure.runtime_optimization;
 
 /**
  * 运行时优化 - 逃逸分析演示

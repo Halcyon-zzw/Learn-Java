@@ -1,105 +1,23 @@
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 /**
- * TODO
+ * 字符工具类
  *
  * @Author: zhuzw
- * @Date: 2020-07-22 17:10
+ * @Date: 2020-07-08 15:15
  * @Version: 1.0
  */
 public class StrUtils {
     public static final String EMPTY = "";
 
-    public static final String SYMBOL_STR = ",，；;。?？!！\t\n\r";
 
-    /**
-     * 判断两个字符串是否相同，字符串都为null也认为相同
-     *
-     * @param str1
-     * @param str2
-     * @return
-     */
-    public static boolean equalsIgnoreNull(String str1, String str2) {
-        if (str1 == null && str2 == null) {
-            return true;
-        }
-        if (str1 != null && str2 != null) {
-            return str1.equals(str2);
-        }
-        return false;
-    }
-
-    /**
-     * 中文数组转成阿拉伯数字
-     *
-     * @param str
-     * @return
-     */
-    public static int toNumeric(String str) {
-        String[] chineseNumbers = {"〇", "零", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
-        String[] numbers = {"0", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-
-        Map<String, String> conversionMap = new HashMap<>();
-        for (int i = 0; i < chineseNumbers.length; i++) {
-            conversionMap.put(chineseNumbers[i], numbers[i]);
-        }
-        StringBuffer sb = new StringBuffer("");
-        for (char c : str.toCharArray()) {
-            String charStr = String.valueOf(c);
-            if (conversionMap.get(charStr) != null) {
-                sb.append(conversionMap.get(charStr));
-            } else {
-                sb.append(charStr);
-            }
-        }
-        return Integer.valueOf(sb.toString());
-    }
-
-    public static String trimToEmpty(String str) {
-        //空白字符hash：12288 、 160 、 32
-        return trimToEmpty(str, "\n\r\t  　");
-    }
-
-
-    /**
-     * 优化String的trim()方法，通过传入指定要删除字符串集合进行修剪
-     *
-     * @param str
-     * @param trimedCharSeq 需要删除的字符集合
-     * @return
-     */
-    public static String trim(String str, CharSequence trimedCharSeq) {
-        String headAndTailStr = trimedCharSeq.toString();
-        char[] strArr = str.toCharArray();
-        int headIndex = 0;
-        int tailIndex = str.length();
-        while ((headIndex < tailIndex) && headAndTailStr.contains(String.valueOf(strArr[headIndex]))) {
-            headIndex++;
-        }
-        while ((headIndex < tailIndex) && headAndTailStr.contains(String.valueOf(strArr[tailIndex - 1]))) {
-            tailIndex--;
-        }
-        if (headIndex > 0 || tailIndex < str.length()) {
-            //修改成功
-            return str.substring(headIndex, tailIndex);
-        }
-        return str;
-    }
-
-    public static String trim(String str, char[] trimedCharArr) {
-        return trim(str, trimedCharArr);
-    }
-
-    public static String trimToEmpty(String str, char[] trimedCharArr) {
-        return str == null ? EMPTY : trim(str, trimedCharArr);
-    }
-
-    public static String trimToEmpty(String str, CharSequence charSequence) {
-        return str == null ? EMPTY : trim(str, charSequence);
-    }
+    public static final String SYMBOL_STR = "[,，；;。?？!！\t\n\r]";
 
     /**
      * 获取所有子串的位置
@@ -120,6 +38,59 @@ public class StrUtils {
         return indexs;
     }
 
+    /**
+     * 是否为纯英文，包括字符
+     *
+     * @return
+     */
+    public static boolean isLetter(String str) {
+        Matcher matcher = PatternUtil.ENGLISH_PATTERN.matcher(str);
+        if (matcher.matches()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 裁剪首尾空白字符
+     * @param str
+     * @return
+     */
+    public static String trim(String str) {
+        return StrProcess.trim(str);
+    }
+
+    public static String trim(String str, char[] trimedCharArr) {
+        return StrProcess.trim(str, trimedCharArr);
+    }
+
+    /**
+     * 优化String的trim()方法，通过传入指定要删除字符串集合进行修剪
+     *
+     * @param str
+     * @param trimedCharSeq 需要删除的字符集合
+     * @return
+     */
+    public static String trim(String str, CharSequence trimedCharSeq) {
+        return StrProcess.trim(str, trimedCharSeq);
+    }
+
+    /**
+     * 裁剪对象为null时返回""
+     * @param str
+     * @return
+     */
+    public static String trimToEmpty(String str) {
+        return str == null ? EMPTY : trim(str);
+    }
+
+    public static String trimToEmpty(String str, char[] trimedCharArr) {
+        return str == null ? EMPTY : trim(str, trimedCharArr);
+    }
+
+    public static String trimToEmpty(String str, CharSequence charSequence) {
+        return str == null ? EMPTY : trim(str, charSequence);
+    }
 
     /**
      * 获取指定位置的最小句子信息
@@ -188,14 +159,13 @@ public class StrUtils {
 
     /**
      * 获取尾部最长公共序列
-     * <p>
-     * 如[学院, 院, 法院] => 院
      *
+     * 如[学院, 院, 法院] => 院
      * @param strList
      * @return
      */
     public static String getTailCommonCharacter(List<String> strList) {
-        StringBuffer sb = new StringBuffer("");
+        StringBuffer sb = new StringBuffer();
 
         char[] tailCharArr = new char[strList.size()];
         //获取字符的数量
@@ -203,7 +173,7 @@ public class StrUtils {
         while (true) {
             //遍历每个字符串
             int index = 0;
-            for (; index < strList.size(); index++) {
+            for (; index < strList.size(); index ++) {
                 String s = strList.get(index);
                 if (i == s.length()) {
                     break;
@@ -224,7 +194,7 @@ public class StrUtils {
         return sb.reverse().toString();
     }
 
-    private static char compare(char[] tailCharArr) {
+    public static char compare(char[] tailCharArr) {
         char tempChar = tailCharArr[0];
         int i1 = 0;
         for (; i1 < tailCharArr.length; i1++) {
@@ -237,4 +207,161 @@ public class StrUtils {
         }
         return '\0';
     }
+    public static String processConBlankCharacter(String str) {
+        return StrProcess.processConBlankCharacter(str );
+    }
+    public static List<String> getParagraphs(String doument) {
+        return StrProcess.getParagraphs(doument);
+    }
+    public static List<String> getSentences(String text) {
+        return StrProcess.getSentences(text);
+    }
+
+    public static List<String> getMinSentences(String text) {
+        return StrProcess.getMinSentences(text);
+    }
+}
+
+interface StrConstant {
+
+}
+
+/**
+ * 字符串加工相关方法
+ */
+class StrProcess {
+    public static final String EMPTY = "";
+
+    public static final String SPACE = " ";
+
+    /**
+     * 获取小句子的符号集合
+     */
+    public static final String SYMBOL_STR = "[,，；;。?？!！\t\n\r]";
+
+    public static final String SENTENCE_SYMBOL_STR = "[。？?！!；;]";
+    /**
+     * 非换行符的空白字符 8194、160、12288
+     */
+    public static String NON_WRAP_BLANK_CHARACTER_REGEX = "(?![\n\r])[\\s  　]{1,}";
+    /**
+     * 所有空白字符 32、8194、160、12288
+     */
+    public static String BLANK_CHARATER_STR = "\n\r\t   　";
+    /**
+     * 裁剪首尾空白字符
+     * @param str
+     * @return
+     */
+    public static String trim(String str) {
+        //空白字符hash：12288 、 160 、 32
+        return trim(str, BLANK_CHARATER_STR);
+    }
+
+    public static String trim(String str, char[] trimedCharArr) {
+        return trim(str, String.valueOf(trimedCharArr));
+    }
+
+    /**
+     * 优化String的trim()方法，通过传入指定要删除字符串集合进行修剪
+     *
+     * @param str
+     * @param trimedCharSeq 需要删除的字符集合
+     * @return
+     */
+    public static String trim(String str, CharSequence trimedCharSeq) {
+        String headAndTailStr = trimedCharSeq.toString();
+        char[] strArr = str.toCharArray();
+        int headIndex = 0;
+        int tailIndex = str.length();
+        while ((headIndex < tailIndex) && headAndTailStr.contains(String.valueOf(strArr[headIndex]))) {
+            headIndex++;
+        }
+        while ((headIndex < tailIndex) && headAndTailStr.contains(String.valueOf(strArr[tailIndex - 1]))) {
+            tailIndex--;
+        }
+        if (headIndex > 0 || tailIndex < str.length()) {
+            //修改成功
+            return str.substring(headIndex, tailIndex);
+        }
+        return str;
+    }
+
+    /**
+     * 裁剪对象为null时返回""
+     * @param str
+     * @return
+     */
+    public static String trimToEmpty(String str) {
+        return str == null ? EMPTY : trim(str);
+    }
+
+    public static String trimToEmpty(String str, char[] trimedCharArr) {
+        return str == null ? EMPTY : trim(str, trimedCharArr);
+    }
+
+    public static String trimToEmpty(String str, CharSequence charSequence) {
+        return str == null ? EMPTY : trim(str, charSequence);
+    }
+
+
+    /**
+     * processContinuousBlankCharacter
+     *
+     * 将连续的空白字符替换为一个空格
+     * @return
+     */
+    public static String processConBlankCharacter(String str) {
+        return str.replaceAll(NON_WRAP_BLANK_CHARACTER_REGEX, SPACE);
+    }
+
+    /**
+     * 获取文章段落
+     *
+     * @param document
+     * @return
+     */
+    public static List<String> getParagraphs(String document) {
+        //句子结束符
+        List<String> pargraphList = new ArrayList<>();
+        String[] paragraphs = document.split("[\n\r]");
+
+        for (int i = 0; i < paragraphs.length; i++) {
+            if (! StringUtils.isEmpty(paragraphs[i])) {
+                pargraphList.add(paragraphs[i]);
+            }
+        }
+        return pargraphList;
+    }
+
+    public static List<String> getSentences(String text) {
+        return getSentences(text, SENTENCE_SYMBOL_STR);
+    }
+
+    public static List<String> getSentences(String text, String sentenceSeparator) {
+        List<String> sentences = new ArrayList<>();
+        List<Character> symbolList = new ArrayList<>();
+        int symbolIndex = 0;
+        for (String sentence : text.split(sentenceSeparator)) {
+            if (sentence.length() == 0) {
+                continue;
+            }
+            symbolIndex += sentence.length();
+
+            char c = '\0';
+            if (symbolIndex < text.length()) { //  防止出现无标点结尾情况
+                c = text.charAt(symbolIndex);
+                sentences.add(sentence + c);
+            }else {
+                sentences.add(sentence);
+            }
+            symbolIndex ++;
+        }
+        return sentences;
+    }
+
+    public static List<String> getMinSentences(String text) {
+        return getSentences(text, SYMBOL_STR);
+    }
+
 }

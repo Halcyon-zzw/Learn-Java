@@ -1,4 +1,4 @@
-package runtime_optimization;
+package memory_structure.runtime_optimization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

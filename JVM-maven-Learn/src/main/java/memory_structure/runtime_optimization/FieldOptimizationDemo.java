@@ -1,4 +1,4 @@
-package runtime_optimization;
+package memory_structure.runtime_optimization;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
