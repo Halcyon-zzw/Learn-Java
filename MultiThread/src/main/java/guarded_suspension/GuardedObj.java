@@ -13,6 +13,7 @@ public class GuardedObj {
     private Object response;
     public Object get() {
         synchronized (this) {
+            //防止虚假唤醒，使用while
             while (response == null) {
                 try {
                     this.wait();
@@ -24,6 +25,11 @@ public class GuardedObj {
         return response;
     }
 
+    /**
+     * 超时等待
+     * @param timeout
+     * @return
+     */
     public Object get(long timeout) {
         synchronized (this) {
             long beginTime = System.currentTimeMillis();

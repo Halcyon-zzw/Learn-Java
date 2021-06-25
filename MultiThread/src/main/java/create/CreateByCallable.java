@@ -20,7 +20,7 @@ public class CreateByCallable implements Callable {
     }
 
     public static void main(String[] args) {
-
+        int a = 1 / 0;
         //使用FutureTask包装Callable对象
         FutureTask<Integer> futureTask = new FutureTask<>(() -> {
             int i = 0;

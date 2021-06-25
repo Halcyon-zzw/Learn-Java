@@ -23,12 +23,14 @@ public class ThreadVisibilityDemo {
 
     /**
      * 可见性问题演示
+     *
+     * - 主线程修改后无法正常停止
      * @throws InterruptedException
      */
     private static void visibilityProblem() throws InterruptedException {
         Thread thread = new Thread(() -> {
             /**
-             * 线程频繁使用runable，会将主存中的runable缓存到本线程高速缓存中
+             * 线程频繁使用runable，循环一定阈值后，会将主存中的runable缓存到本线程高速缓存中
              */
             while (runable) {
 
@@ -41,6 +43,7 @@ public class ThreadVisibilityDemo {
     /**
      * 伪可见性问题，循环体中加入System.out.println();后可正常退出循环。
      * why?
+     * 源代码加锁了
      */
     private static void visibilityFalseProblem() {
         Thread thread = new Thread(() -> {

@@ -42,6 +42,7 @@ public class BlockingQueue<T> {
      * @return
      */
     public T pool(long timeout, TimeUnit timeUnit) {
+        //转换为纳秒
         long nanoTime = timeUnit.toNanos(timeout);
         lock.lock();
         try {
@@ -73,7 +74,6 @@ public class BlockingQueue<T> {
         try {
             while (queue.isEmpty()) {
                 try {
-
                     emptyWaitSet.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();

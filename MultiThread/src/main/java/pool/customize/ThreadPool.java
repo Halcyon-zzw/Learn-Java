@@ -24,6 +24,7 @@ public class ThreadPool {
     //线程集合
     private Set<Worker> workers = new HashSet<>();
 
+    //核心线程数
     private int coreSize;
 
     private long timeout;
@@ -31,11 +32,18 @@ public class ThreadPool {
     private TimeUnit timeUnit;
 
     private int capacity;
-
+    /**
+     * 超时策略
+     * 1、死等
+     * 2、超时等待
+     * 3、让调用者放弃任务执行
+     * 4、让调用者抛出异常
+     * 5、让调用者自己执行任务
+     */
     private RejectPolicy<Runnable> rejectPolicy;
 
     public ThreadPool(int capacity, int coreSize, long timeout, TimeUnit timeUnit,
-                      RejectPolicy rejectPolicy) {
+                      RejectPolicy<Runnable> rejectPolicy) {
         this.capacity = capacity;
         this.queue = new BlockingQueue<>(capacity);
         this.coreSize = coreSize;

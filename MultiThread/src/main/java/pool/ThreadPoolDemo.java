@@ -15,7 +15,8 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
  *      1、使用Executors工厂类的newFixedThreadPool获取固定线程数量的线程池（返回实现了ExecutorService接口的对象）
  *          - 核心线程数=最大线程数， 队列为无界队列
  *          - 或newSingleThreadPool、newCacheThreadPool、newScheduledThreadPool,
- *          - 不建议使用此类方法，
+ *          - 不建议使用
+ *          此类方法，
  *              - 前两个允许的请求队列为Integer.MAX_VALUE，可能堆积大量的请求，从而导致OOM
  *              - 后两个允许创建的线程数量为Integer.MAX_VALUE，可能创建大量线程，从而导致OOM
  *      2、创建线程类，设置线程任务
@@ -33,9 +34,9 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
  *          场景： 希望多个任务排队执行
  *          和自身创建一个线程的区别：
  *              - 自己创建的线程如果任务执行失败将终止；而线程池会创建新的线程保证池的正常工作
- *              - 返回的FinalizableDelegatedExecutorService对象，只对外暴露ExecutorService有的方法，不能调用ThreadPoolExecutor中特有的方法
+ *              - 返回的FinalizableDelegatedExecutorService对象，只对外暴露ExecutorService有的方法，不能调用ThreadPoolExecutor中特有的方法；如设置线程数方法
  *              - Executors.newFixedThreadPool(1)实现单线程池；
- *                  - 对外暴露的时ThreadPoolExecutor对象，可以强转后调用setCorePoolSize修改核心线程数
+ *                  - 对外暴露的是ThreadPoolExecutor对象，可以强转后调用setCorePoolSize修改核心线程数
  *
  *      newScheduledThreadPool(corePoolSize);
  * @Author: zhuzw
